@@ -1,0 +1,121 @@
+<style>
+  .neon-glow { text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,112,158,0.6), 0 0 30px rgba(181,0,88,0.4); }
+  .crystalline-text { background: linear-gradient(to bottom, #ffffff 30%, #ffc2c9 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.25)); }
+</style>
+
+<div class="space-y-6">
+  <section id="hero-banner" class="relative overflow-hidden rounded-2xl aspect-[16/9] w-full flex flex-col items-center justify-center text-center shadow-2xl bg-surface-container-high"
+    style="background-image: url('https://drive.google.com/thumbnail?id=1AJf91ga_ZFsPPDhQFmNGatcEZf18ZmuH&sz=w1200'); background-size:cover; background-position:center; background-repeat:no-repeat;">
+    <div class="absolute inset-0 bg-black/10 mix-blend-overlay"></div>
+    <div class="relative z-10 px-6">
+      <h2 class="font-headline font-black text-5xl text-white tracking-tighter leading-none neon-glow crystalline-text">보드방정</h2>
+    </div>
+  </section>
+
+  <section class="bg-surface-container-low rounded-xl p-6 space-y-4">
+    <div class="flex justify-between items-start">
+      <div>
+        <h3 class="font-headline text-lg font-black text-primary">BGM Player</h3>
+        <p id="bgm-title" class="text-on-surface-variant font-medium text-xs">Ready to play...</p>
+      </div>
+      <span class="material-symbols-outlined text-primary">music_note</span>
+    </div>
+    <div class="flex items-center justify-center gap-6">
+      <button onclick="bgmPrev()" class="material-symbols-outlined text-outline hover:text-primary transition-colors">skip_previous</button>
+      <button onclick="bgmToggle()" class="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all">
+        <span id="bgm-icon" class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1;">play_arrow</span>
+      </button>
+      <button onclick="bgmNext()" class="material-symbols-outlined text-outline hover:text-primary transition-colors">skip_next</button>
+    </div>
+    <div class="space-y-2">
+      <div class="flex items-center gap-3">
+        <div class="flex-1 h-1.5 bg-surface-container-high rounded-full overflow-hidden cursor-pointer" onclick="bgmSeek(event, this)">
+          <div id="bgm-progress" class="h-full bg-primary rounded-full transition-all" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="flex justify-between text-[10px] font-bold text-outline-variant uppercase tracking-tighter">
+        <span id="bgm-current">00:00</span>
+        <span id="bgm-total">--:--</span>
+      </div>
+    </div>
+    <audio id="bgm-audio"></audio>
+  </section>
+
+  <section class="bg-white rounded-xl p-5 border border-surface-container-highest shadow-sm">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="font-headline font-black text-primary flex items-center gap-2"><span class="material-symbols-outlined text-xl">calendar_month</span> Next Events</h3>
+      <button onclick="navigateTo('Calendar')" class="text-xs font-bold text-outline-variant uppercase hover:text-primary transition-colors">View All</button>
+    </div>
+    <div id="home-events" class="space-y-3">
+      <div class="animate-pulse h-14 bg-surface-container-low rounded-lg"></div>
+    </div>
+  </section>
+
+  <section class="bg-white rounded-xl p-5 border border-surface-container-highest shadow-sm">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="font-headline font-black text-primary flex items-center gap-2"><span class="material-symbols-outlined text-xl">forum</span> Latest Posts</h3>
+      <button onclick="navigateTo('Board')" class="text-xs font-bold text-outline-variant uppercase hover:text-primary transition-colors">Board</button>
+    </div>
+    <ul id="home-posts" class="space-y-3">
+      <li class="animate-pulse h-8 bg-surface-container-low rounded"></li>
+    </ul>
+  </section>
+
+  <section class="bg-secondary-container/10 rounded-xl p-5 border border-secondary/20 cursor-pointer" onclick="navigateTo('Rules')">
+    <div class="w-full flex items-center justify-between group">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-secondary-container rounded-full flex items-center justify-center"><span class="material-symbols-outlined text-on-secondary-container">gavel</span></div>
+        <div class="text-left">
+          <h3 class="font-headline font-black text-secondary-dim text-sm">Community Rules</h3>
+          <p class="text-[11px] text-on-secondary-fixed-variant">필독! 보드방정 규칙</p>
+        </div>
+      </div>
+      <span class="material-symbols-outlined text-secondary-dim group-hover:translate-x-1 transition-transform">arrow_forward</span>
+    </div>
+  </section>
+</div>
+
+<script>
+// BGM Player 로직
+var bgmPlaying = false; var bgmAudio = document.getElementById('bgm-audio');
+var bgmTracks = [ { title: 'BGM 준비중', src: '' } ]; var bgmIndex = 0;
+function bgmFormat(sec) { var m = Math.floor(sec / 60), s = Math.floor(sec % 60); return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s; }
+function bgmToggle() { if (bgmTracks[bgmIndex].src === '') return; if (bgmPlaying) { bgmAudio.pause(); } else { bgmAudio.play(); } }
+function bgmPrev() { bgmIndex = (bgmIndex - 1 + bgmTracks.length) % bgmTracks.length; bgmLoad(); }
+function bgmNext() { bgmIndex = (bgmIndex + 1) % bgmTracks.length; bgmLoad(); }
+function bgmLoad() { var t = bgmTracks[bgmIndex]; document.getElementById('bgm-title').textContent = t.title; bgmAudio.src = t.src; if (bgmPlaying) bgmAudio.play(); }
+function bgmSeek(e, bar) { if (!bgmAudio.duration) return; var rect = bar.getBoundingClientRect(); bgmAudio.currentTime = ((e.clientX - rect.left) / rect.width) * bgmAudio.duration; }
+bgmAudio.addEventListener('play', function() { bgmPlaying = true; document.getElementById('bgm-icon').textContent = 'pause'; });
+bgmAudio.addEventListener('pause', function() { bgmPlaying = false; document.getElementById('bgm-icon').textContent = 'play_arrow'; });
+bgmAudio.addEventListener('timeupdate', function() { if (!bgmAudio.duration) return; var pct = (bgmAudio.currentTime / bgmAudio.duration) * 100; document.getElementById('bgm-progress').style.width = pct + '%'; document.getElementById('bgm-current').textContent = bgmFormat(bgmAudio.currentTime); document.getElementById('bgm-total').textContent = bgmFormat(bgmAudio.duration); });
+bgmAudio.addEventListener('ended', bgmNext); bgmLoad();
+
+// 일정 & 포스트 연동
+var MONTHS_KO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+google.script.run.withSuccessHandler(function(events) {
+  var el = document.getElementById('home-events');
+  var futureEvents = events.filter(function(ev) { return new Date(ev.date) >= new Date(new Date().setHours(0,0,0,0)); });
+  if (!futureEvents || futureEvents.length === 0) { el.innerHTML = '<p class="text-sm text-outline text-center py-2">등록된 일정이 없습니다.</p>'; return; }
+  el.innerHTML = futureEvents.slice(0, 2).map(function(ev) {
+    var d = new Date(ev.date); var editedTag = ev.isEdited ? '<span class="text-[9px] text-outline-variant font-normal ml-1">(수정됨)</span>' : '';
+    return '<div class="flex items-center gap-4 p-3 bg-surface-container-lowest rounded-lg border-l-4 border-primary">' +
+      '<div class="text-center min-w-[40px]"><div class="text-[10px] font-black text-primary uppercase leading-none">' + MONTHS_KO[d.getMonth()] + '</div>' +
+      '<div class="text-lg font-black text-on-surface-variant leading-none">' + d.getDate() + '</div></div>' +
+      '<div><h4 class="text-sm font-bold text-on-surface">' + ev.title + editedTag + '</h4>' +
+      '<p class="text-[11px] text-on-surface-variant">' + ev.content + '</p></div></div>';
+  }).join('');
+}).getEvents();
+
+google.script.run.withSuccessHandler(function(posts) {
+  var el = document.getElementById('home-posts');
+  if (!posts || posts.length === 0) { el.innerHTML = '<li class="text-sm text-outline text-center py-2">등록된 게시물이 없습니다.</li>'; return; }
+  el.innerHTML = posts.slice(0, 3).map(function(p) {
+    var t = new Date(p.timestamp); var diff = Math.round((Date.now() - t) / 60000);
+    var timeStr = diff < 1 ? '방금 전' : diff < 60 ? diff + '분 전' : Math.round(diff/60) + '시간 전';
+    var editedTag = p.isEdited ? '<span class="text-[9px] text-outline-variant ml-1">(수정됨)</span>' : '';
+    return '<li class="flex items-center justify-between text-sm py-1 border-b border-surface-container-low last:border-0">' +
+      '<span class="text-on-surface truncate pr-4">' + p.content + editedTag + '</span>' +
+      '<span class="text-[10px] font-bold text-outline-variant whitespace-nowrap">' + timeStr + '</span></li>';
+  }).join('');
+}).getPosts();
+</script>
