@@ -1,21 +1,641 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>나의 첫 깃허브 웹사이트</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>새장 속 제비는 꿈을 꾼다 - GM 대시보드</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Serif+KR:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <style>
-    body {
-      text-align: center;
-      padding: 50px;
-      font-family: sans-serif;
-      background-color: #f0f8ff;
+    :root {
+      --wood-dark: #2a1610;
+      --wood-medium: #3e2723;
+      --velvet-red: #4a0000;
+      --velvet-light: #6b0f0f;
+      --gold: #d4af37;
+      --gold-dark: #aa7c11;
+      --parchment: #f4ebd8;
+      --parchment-dark: #dcb98a;
+      --ink: #1a1a1a;
     }
-    h1 { color: #333; }
-    p { color: #666; }
+
+    body {
+      font-family: 'Noto Serif KR', serif;
+      background-color: var(--wood-dark);
+      background-image: 
+        linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 10%, rgba(0,0,0,0) 90%, rgba(0,0,0,0.8) 100%),
+        radial-gradient(circle at 50% 50%, #3e2723 0%, #1a0b08 100%);
+      color: var(--parchment);
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, .serif-eng {
+      font-family: 'Playfair Display', 'Noto Serif KR', serif;
+    }
+
+    .bg-parchment {
+      background-color: var(--parchment);
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(139, 69, 19, 0.05) 0%, transparent 40%);
+      color: var(--ink);
+      box-shadow: 
+        inset 0 0 30px rgba(139, 69, 19, 0.1),
+        0 10px 20px rgba(0,0,0,0.5);
+    }
+
+    .bg-velvet {
+      background: linear-gradient(135deg, var(--velvet-red) 0%, #2b0000 100%);
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.6);
+    }
+
+    .gold-accent { color: var(--gold); text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
+    .border-gold { border-color: var(--gold-dark); }
+    .border-double-gold { border: 4px double var(--gold-dark); }
+
+    .btn-antique {
+      background: linear-gradient(to bottom, #dcb98a, #c29b62);
+      color: #2a1610;
+      border: 1px solid #8b5a2b;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 4px rgba(0,0,0,0.4);
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+    .btn-antique:hover { background: linear-gradient(to bottom, #eaddcf, #dcb98a); transform: translateY(-1px); }
+    .btn-antique:active { background: #b38b55; transform: translateY(1px); }
+
+    .btn-brass {
+      background: linear-gradient(to bottom, #5a4033, #3a261d);
+      color: var(--gold);
+      border: 1px solid var(--gold-dark);
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.5);
+      font-family: 'Noto Serif KR', serif;
+      transition: all 0.2s ease;
+    }
+    .btn-brass:hover { background: linear-gradient(to bottom, #6b4d3d, #4a3225); color: #ffeba1; }
+    .btn-brass.active-timer { background: linear-gradient(to bottom, #8b0000, #4a0000); color: white; border-color: #ff6b6b; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .pocket-watch {
+      background: #fff8e7;
+      border: 4px solid var(--gold-dark);
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.4), 0 4px 6px rgba(0,0,0,0.5);
+      color: var(--ink);
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      letter-spacing: 2px;
+      border-radius: 9999px;
+    }
+
+    .input-vintage {
+      background: transparent;
+      border: none;
+      border-bottom: 1px dashed #8b5a2b;
+      color: var(--velvet-red);
+      font-weight: 700;
+    }
+    .input-vintage:focus { outline: none; border-bottom: 2px solid var(--velvet-red); }
+
+    .train-car-blueprint {
+      background-color: rgba(255, 255, 255, 0.85);
+      border: 3px solid #3e2723;
+    }
+    .train-room-blueprint {
+      border-right: 1px solid #3e2723;
+      border-left: 1px solid #3e2723;
+    }
   </style>
 </head>
-<body>
-  <h1>🎉 깃허브 배포 성공!</h1>
-  <p>GAS를 넘어 새로운 웹 개발의 세계로 온 것을 환영합니다.</p>
+<body class="p-2 md:p-6 lg:p-8">
+
+  <div class="max-w-[1400px] mx-auto space-y-10">
+
+    <!-- 헤더 -->
+    <header class="bg-velvet rounded-t-xl p-8 text-center relative overflow-hidden border-2 border-gold-dark">
+      <div class="absolute top-2 left-2 w-8 h-8 border-t-2 border-l-2 border-gold opacity-70"></div>
+      <div class="absolute top-2 right-2 w-8 h-8 border-t-2 border-r-2 border-gold opacity-70"></div>
+      <div class="absolute bottom-2 left-2 w-8 h-8 border-b-2 border-l-2 border-gold opacity-70"></div>
+      <div class="absolute bottom-2 right-2 w-8 h-8 border-b-2 border-r-2 border-gold opacity-70"></div>
+      
+      <p class="text-gold-dark text-sm tracking-[0.3em] mb-2 uppercase serif-eng">18th Century Night Train Murder Mystery</p>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold gold-accent tracking-widest mb-4 mt-2">새장 속 제비는 꿈을 꾼다</h1>
+      <p class="text-xl text-gray-300 italic font-light">Game Master's Confidential Dossier</p>
+    </header>
+
+    <!-- 1. 줄거리 (TTS) -->
+    <section class="bg-parchment rounded p-1">
+      <div class="border-double-gold p-6 md:p-10 m-1">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-[#8b5a2b] pb-4">
+          <h2 class="text-3xl font-bold text-[#4a0000] flex items-center gap-3">
+            <span class="text-4xl">📜</span> 오프닝 줄거리
+          </h2>
+          <button id="tts-btn" class="btn-antique px-6 py-2 rounded-full flex items-center gap-2 mt-4 md:mt-0 shadow-lg">
+            <span>🔊</span> [낭독]
+          </button>
+        </div>
+        <div id="story-text" class="text-lg leading-loose space-y-5 px-2 text-[#1a1a1a] font-medium">
+          <p>아직 통신 기기가 발달하지 않은 18세기, 여러분들은 각자의 목적지를 향해 '야간 열차'에 탑승했습니다. 야간 열차는 최근 새롭게 개발된 신기술로 많은 인기를 끌고 있습니다. 그러나, 여러분이 탑승한 열차 안에서 어떤 사건이 벌어졌습니다. '야간 열차'에 탑승하고 하룻밤을 보낸 다음 날. 열차 내의 소란스러운 소리를 따라가니 '201호의 남성'이 살해당했다고 합니다.</p>
+          <p>최초 발견자는 피해자의 친구였던 '학생'으로, 아침이 되어 201호에 찾아가 노크를 했으나 문이 잠겨 있고 대답이 없어 차장에게 도움을 청했다고 합니다.</p>
+          <p>차장에게 열쇠를 받아 문을 열자, 그곳에는 숨이 끊어진 피해자의 모습만 보였습니다. 피해자의 얼굴은 여러 번 세게 구타당한 흔적이 남아있었으며, 그것이 사인인지는 현재로선 알 수 없었습니다.</p>
+          <p>피해자의 사망 당시 알리바이가 명확하지 않았던 사람은 승객과 승무원을 포함하여 총 9명. 열차는 오늘 중 목적지에 도착할 예정입니다. 하지만, 여러분들은 다른 사람에게는 알리고 싶지 않은 비밀을 품고 있습니다. 어떻게든 열차가 도착하기 전에 범인을 찾아 경찰의 수색을 피하고 각자의 목적을 달성해야 합니다. 이 열차에서 벌어진 이야기의 종착점은 어디일까요?</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 등장인물 및 배역 -->
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold gold-accent mb-6 border-b border-gold pb-2">등장인물 및 배역</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-12">
+      
+      <!-- 차장 -->
+      <div class="flex flex-col gap-2 items-center text-center">
+        <div class="w-32 h-32 rounded-full border-4 border-[#d4af37] shadow-lg overflow-hidden mb-2">
+          <img src="https://i.imgur.com/5mhJv7R.png" alt="차장 황호근" class="w-full h-full object-cover">
+        </div>
+        <h3 class="text-2xl font-bold text-gold">1. 차장실: 차장</h3>
+        <p class="text-base lg:text-lg text-gray-300 font-medium leading-relaxed px-2">고령의 남성.<br/>야간 열차의 베테랑 차장, 고집이 센 편이지만 최근 건망증이 심한 상태다.</p>
+        <input type="text" value="황호근" class="p-2 bg-transparent border-b-2 border-gray-500 text-[#e5d3b3] text-center focus:outline-none focus:border-gold w-full mt-2 text-lg font-bold">
+      </div>
+
+      <!-- 귀족 -->
+      <div class="flex flex-col gap-2 items-center text-center">
+        <div class="w-32 h-32 rounded-full border-4 border-[#d4af37] shadow-lg overflow-hidden mb-2">
+          <img src="https://i.imgur.com/VkEaknD.png" alt="귀족 최윤화" class="w-full h-full object-cover">
+        </div>
+        <h3 class="text-2xl font-bold text-gold">2. 202호실: 귀족</h3>
+        <p class="text-base lg:text-lg text-gray-300 font-medium leading-relaxed px-2">20대 후반의 여성.<br/>화려한 옷차림을 하고있으며 밝은 성격이고 친화력이 좋다.</p>
+        <input type="text" value="최윤화" class="p-2 bg-transparent border-b-2 border-gray-500 text-[#e5d3b3] text-center focus:outline-none focus:border-gold w-full mt-2 text-lg font-bold">
+      </div>
+
+      <!-- 학생 -->
+      <div class="flex flex-col gap-2 items-center text-center">
+        <div class="w-32 h-32 rounded-full border-4 border-[#d4af37] shadow-lg overflow-hidden mb-2">
+          <img src="https://i.imgur.com/8AN9bf5.png" alt="학생 강성우" class="w-full h-full object-cover">
+        </div>
+        <h3 class="text-2xl font-bold text-gold">3. 203호실: 학생</h3>
+        <p class="text-base lg:text-lg text-gray-300 font-medium leading-relaxed px-2">10대 후반의 남성.<br/>호기심이 많지만 우유부단하고 걱정이 많다. 늘 불안한 표정이다.</p>
+        <input type="text" value="강성우" class="p-2 bg-transparent border-b-2 border-gray-500 text-[#e5d3b3] text-center focus:outline-none focus:border-gold w-full mt-2 text-lg font-bold">
+      </div>
+
+      <!-- 사업가 -->
+      <div class="flex flex-col gap-2 items-center text-center">
+        <div class="w-32 h-32 rounded-full border-4 border-[#d4af37] shadow-lg overflow-hidden mb-2">
+          <img src="https://i.imgur.com/fp1v4qq.png" alt="사업가 김재철" class="w-full h-full object-cover">
+        </div>
+        <h3 class="text-2xl font-bold text-gold">4. 301호실: 사업가</h3>
+        <p class="text-base lg:text-lg text-gray-300 font-medium leading-relaxed px-2">40대 후반의 남성.<br/>수다스러운 성격이며, 부자이다. 세세한 것에 무척 섬세하다.</p>
+        <input type="text" value="김재철" class="p-2 bg-transparent border-b-2 border-gray-500 text-[#e5d3b3] text-center focus:outline-none focus:border-gold w-full mt-2 text-lg font-bold">
+      </div>
+
+      <!-- 가정부 -->
+      <div class="flex flex-col gap-2 items-center text-center">
+        <div class="w-32 h-32 rounded-full border-4 border-[#d4af37] shadow-lg overflow-hidden mb-2">
+          <img src="https://i.imgur.com/dkMg1GK.png" alt="가정부 이예진" class="w-full h-full object-cover">
+        </div>
+        <h3 class="text-2xl font-bold text-gold">5. 302호실: 가정부</h3>
+        <p class="text-base lg:text-lg text-gray-300 font-medium leading-relaxed px-2">30대 여성.<br/>미모가 뛰어나며 친화력이 좋고, 가끔씩 엉뚱한 말을 할 때가 있다.</p>
+        <input type="text" value="이예진" class="p-2 bg-transparent border-b-2 border-gray-500 text-[#e5d3b3] text-center focus:outline-none focus:border-gold w-full mt-2 text-lg font-bold">
+      </div>
+
+      <!-- 소방관 -->
+      <div class="flex flex-col gap-2 items-center text-center">
+        <div class="w-32 h-32 rounded-full border-4 border-[#d4af37] shadow-lg overflow-hidden mb-2">
+          <img src="https://i.imgur.com/1VxElMC.png" alt="소방관 배윤호" class="w-full h-full object-cover">
+        </div>
+        <h3 class="text-2xl font-bold text-gold">6. 303호실: 소방관</h3>
+        <p class="text-base lg:text-lg text-gray-300 font-medium leading-relaxed px-2">40대 후반 정도의 남성.<br/>정직한 성품으로 동료들에게 신뢰를 받고있다.</p>
+        <input type="text" value="배윤호" class="p-2 bg-transparent border-b-2 border-gray-500 text-[#e5d3b3] text-center focus:outline-none focus:border-gold w-full mt-2 text-lg font-bold">
+      </div>
+
+      <!-- 화가 -->
+      <div class="flex flex-col gap-2 items-center text-center">
+        <div class="w-32 h-32 rounded-full border-4 border-[#d4af37] shadow-lg overflow-hidden mb-2">
+          <img src="https://i.imgur.com/hgX3Sdc.png" alt="화가 김은솔" class="w-full h-full object-cover">
+        </div>
+        <h3 class="text-2xl font-bold text-gold">7. 401호실: 화가</h3>
+        <p class="text-base lg:text-lg text-gray-300 font-medium leading-relaxed px-2">10대 후반의 여성.<br/>자유분방하고 발랄한 성격이다. 풍경이나 사람을 그린다.</p>
+        <input type="text" value="김은솔" class="p-2 bg-transparent border-b-2 border-gray-500 text-[#e5d3b3] text-center focus:outline-none focus:border-gold w-full mt-2 text-lg font-bold">
+      </div>
+
+      <!-- 승무원 -->
+      <div class="flex flex-col gap-2 items-center text-center">
+        <div class="w-32 h-32 rounded-full border-4 border-[#d4af37] shadow-lg overflow-hidden mb-2">
+          <img src="https://i.imgur.com/4VbMxn3.png" alt="승무원 이지연" class="w-full h-full object-cover">
+        </div>
+        <h3 class="text-2xl font-bold text-gold">8. 402호실: 승무원</h3>
+        <p class="text-base lg:text-lg text-gray-300 font-medium leading-relaxed px-2">20대 초반의 여성.<br/>차분한 분위기를 풍기며 소심하지만, 아는 사람 앞에서는 밝고 수다스럽다.</p>
+        <input type="text" value="이지연" class="p-2 bg-transparent border-b-2 border-gray-500 text-[#e5d3b3] text-center focus:outline-none focus:border-gold w-full mt-2 text-lg font-bold">
+      </div>
+
+      <!-- 의사 -->
+      <div class="flex flex-col gap-2 items-center text-center">
+        <div class="w-32 h-32 rounded-full border-4 border-[#d4af37] shadow-lg overflow-hidden mb-2">
+          <img src="https://i.imgur.com/f9IaxNb.png" alt="의사 구세희" class="w-full h-full object-cover">
+        </div>
+        <h3 class="text-2xl font-bold text-gold">9. 403호실: 의사</h3>
+        <p class="text-base lg:text-lg text-gray-300 font-medium leading-relaxed px-2">50대 남성.<br/>차분한 성격으로 친절한 인상이다. 가족을 소중히 생각한다.</p>
+        <input type="text" value="구세희" class="p-2 bg-transparent border-b-2 border-gray-500 text-[#e5d3b3] text-center focus:outline-none focus:border-gold w-full mt-2 text-lg font-bold">
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 야간 열차 평면도 (화장실 제거됨, 구조 유지) -->
+    <section class="bg-parchment rounded p-1">
+      <div class="border-double-gold p-6 md:p-10 m-1">
+        <h2 class="text-3xl font-bold text-[#4a0000] mb-8 text-center font-serif border-b border-[#8b5a2b] pb-4">
+          야간 열차 평면도
+        </h2>
+        <div class="text-[#2a1610] overflow-x-auto">
+          <div class="min-w-[800px] flex flex-col gap-16 font-semibold py-4">
+            
+            <!-- 상단 열: 1호차(식당차), 2호차 -->
+            <div class="flex gap-16 justify-center items-center">
+              <!-- 1호차 -->
+              <div class="flex items-center relative">
+                <div class="mr-2 text-sm whitespace-nowrap text-right font-bold text-[#2a1610]">
+                  차장실<br/>←
+                </div>
+                <!-- 기차 연결부(좌) -->
+                <div class="w-4 h-16 border-2 border-[#3e2723] rounded-l-full bg-[#c29b62]"></div>
+                
+                <div class="train-car-blueprint w-80 h-24 flex relative">
+                  <div class="w-1/3 flex items-center justify-center bg-[rgba(0,0,0,0.05)] border-r border-[#3e2723]">주방</div>
+                  <div class="w-2/3 flex flex-col">
+                    <div class="text-center text-xs py-1 border-b border-[#3e2723]">식당차</div>
+                    <div class="flex-1 grid grid-cols-4 gap-1 p-2">
+                      <div class="border border-[#3e2723]"></div><div class="border border-[#3e2723]"></div>
+                      <div class="border border-[#3e2723]"></div><div class="border border-[#3e2723]"></div>
+                      <div class="border border-[#3e2723]"></div><div class="border border-[#3e2723]"></div>
+                      <div class="border border-[#3e2723]"></div><div class="border border-[#3e2723]"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="w-4 h-16 border-2 border-[#3e2723] rounded-r-full bg-[#c29b62]"></div>
+                <div class="ml-2 text-sm font-bold text-[#2a1610]">2호차<br/>→</div>
+              </div>
+
+              <!-- 2호차 -->
+              <div class="flex items-center relative">
+                <div class="mr-2 text-sm text-right font-bold text-[#2a1610]">식당차<br/>←</div>
+                <div class="w-4 h-16 border-2 border-[#3e2723] rounded-l-full bg-[#c29b62]"></div>
+                
+                <div class="train-car-blueprint w-80 h-24 flex flex-col relative">
+                  <div class="absolute -top-7 w-full text-center text-base font-bold text-[#4a0000]">2호차</div>
+                  <div class="h-6 border-b border-[#3e2723] flex items-center justify-center text-xs tracking-widest">복 도</div>
+                  <div class="flex-1 flex text-center">
+                    <div class="flex-1 flex flex-col items-center justify-center train-room-blueprint">201호<br/><span class="text-[10px] text-red-800 font-bold">피해자</span></div>
+                    <div class="flex-1 flex flex-col items-center justify-center train-room-blueprint">202호<br/><span class="text-[10px] text-gray-600">귀족</span></div>
+                    <div class="flex-1 flex flex-col items-center justify-center train-room-blueprint">203호<br/><span class="text-[10px] text-gray-600">학생</span></div>
+                  </div>
+                </div>
+                
+                <div class="w-4 h-16 border-2 border-[#3e2723] rounded-r-full bg-[#c29b62]"></div>
+                <div class="ml-2 text-sm font-bold text-[#2a1610]">3호차<br/>→</div>
+              </div>
+            </div>
+
+            <!-- 하단 열: 3호차, 4호차 -->
+            <div class="flex gap-16 justify-center items-center mt-4">
+              <!-- 3호차 -->
+              <div class="flex items-center relative">
+                <div class="mr-2 text-sm text-right font-bold text-[#2a1610]">2호차<br/>←</div>
+                <div class="w-4 h-16 border-2 border-[#3e2723] rounded-l-full bg-[#c29b62]"></div>
+                
+                <div class="train-car-blueprint w-80 h-24 flex flex-col relative">
+                  <div class="absolute -top-7 w-full text-center text-base font-bold text-[#4a0000]">3호차</div>
+                  <div class="h-6 border-b border-[#3e2723] flex items-center justify-center text-xs tracking-widest">복 도</div>
+                  <div class="flex-1 flex text-center">
+                    <div class="flex-1 flex flex-col items-center justify-center train-room-blueprint">301호<br/><span class="text-[10px] text-gray-600">사업가</span></div>
+                    <div class="flex-1 flex flex-col items-center justify-center train-room-blueprint">302호<br/><span class="text-[10px] text-gray-600">가정부</span></div>
+                    <div class="flex-1 flex flex-col items-center justify-center train-room-blueprint">303호<br/><span class="text-[10px] text-gray-600">소방관</span></div>
+                  </div>
+                </div>
+                
+                <div class="w-4 h-16 border-2 border-[#3e2723] rounded-r-full bg-[#c29b62]"></div>
+                <div class="ml-2 text-sm font-bold text-[#2a1610]">4호차<br/>→</div>
+              </div>
+
+              <!-- 4호차 -->
+              <div class="flex items-center relative">
+                <div class="mr-2 text-sm text-right font-bold text-[#2a1610]">3호차<br/>←</div>
+                <div class="w-4 h-16 border-2 border-[#3e2723] rounded-l-full bg-[#c29b62]"></div>
+                
+                <div class="train-car-blueprint w-80 h-24 flex flex-col relative">
+                  <div class="absolute -top-7 w-full text-center text-base font-bold text-[#4a0000]">4호차</div>
+                  <div class="h-6 border-b border-[#3e2723] flex items-center justify-center text-xs tracking-widest">복 도</div>
+                  <div class="flex-1 flex text-center">
+                    <div class="flex-1 flex flex-col items-center justify-center train-room-blueprint">401호<br/><span class="text-[10px] text-gray-600">화가</span></div>
+                    <div class="flex-1 flex flex-col items-center justify-center train-room-blueprint">402호<br/><span class="text-[10px] text-gray-600">승무원</span></div>
+                    <div class="flex-1 flex flex-col items-center justify-center train-room-blueprint">403호<br/><span class="text-[10px] text-gray-600">의사</span></div>
+                  </div>
+                </div>
+                
+                <div class="w-4 h-16 border-2 border-[#3e2723] rounded-r-full bg-[#c29b62]"></div>
+                <div class="ml-2 text-sm font-bold text-[#2a1610]">다음 차<br/>→</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. 게임 흐름 & 타이머 -->
+    <section class="bg-velvet rounded-xl p-1 shadow-2xl mb-20">
+      <div class="border-double-gold p-6 md:p-8 bg-[#2a1610] bg-opacity-95 m-1 rounded-lg">
+        <h2 class="text-3xl font-bold text-gold mb-8 text-center font-serif border-b border-gray-600 pb-4">
+          <span class="text-2xl mr-2">⏱️</span> 게임 흐름 및 타이머
+        </h2>
+        <div class="flex flex-col gap-4">
+          
+          <!-- Step 1 -->
+          <div class="flex items-center justify-between border-b border-gray-700 pb-4 pt-2">
+            <div>
+              <span class="text-[#dcb98a] font-bold mr-2 text-lg">1.</span> <span class="text-gray-200">게임 설명서 확인</span>
+            </div>
+            <span class="text-[#8b5a2b] italic text-sm">시간 제한 없음</span>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-700 pb-4 pt-2 gap-4">
+            <div><span class="text-[#dcb98a] font-bold mr-2 text-lg">2.</span> <span class="text-gray-200">인물 설정서 숙지</span> <span class="text-sm text-gray-400 ml-2">(10분)</span></div>
+            <div class="flex items-center gap-3">
+              <div class="pocket-watch px-4 py-1 text-xl w-24 text-center" id="time-2">10:00</div>
+              <button onclick="toggleTimer(2, 600)" id="btn-2" class="btn-brass px-4 py-1 rounded shadow">시작</button>
+              <button onclick="resetTimer(2, 600)" class="btn-brass px-3 py-1 rounded shadow">↺</button>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-700 pb-4 pt-2 gap-4">
+            <div><span class="text-[#dcb98a] font-bold mr-2 text-lg">3.</span> <span class="text-gray-200">역할 소개</span> <span class="text-sm text-gray-400 ml-2">(총 9분)</span></div>
+            <div class="flex items-center gap-3">
+              <div class="pocket-watch px-4 py-1 text-xl w-24 text-center" id="time-3">09:00</div>
+              <button onclick="toggleTimer(3, 540)" id="btn-3" class="btn-brass px-4 py-1 rounded shadow">시작</button>
+              <button onclick="resetTimer(3, 540)" class="btn-brass px-3 py-1 rounded shadow">↺</button>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-700 pb-4 pt-2 gap-4">
+            <div><span class="text-[#dcb98a] font-bold mr-2 text-lg">4.</span> <span class="text-gray-200">1차 조사</span> <span class="text-sm text-gray-400 block md:inline md:ml-2">20분 / 카드 획득, 밀담, 전체 토론</span></div>
+            <div class="flex items-center gap-3">
+              <div class="pocket-watch px-4 py-1 text-xl w-24 text-center" id="time-4">20:00</div>
+              <button onclick="toggleTimer(4, 1200)" id="btn-4" class="btn-brass px-4 py-1 rounded shadow">시작</button>
+              <button onclick="resetTimer(4, 1200)" class="btn-brass px-3 py-1 rounded shadow">↺</button>
+            </div>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-700 pb-4 pt-2 gap-4">
+            <div><span class="text-[#dcb98a] font-bold mr-2 text-lg">5.</span> <span class="text-gray-200">1차 밀담</span> <span class="text-sm text-red-400 font-bold block md:inline md:ml-2">20분 / 카드 획득 및 밀담만 (최대 3인)</span></div>
+            <div class="flex items-center gap-3">
+              <div class="pocket-watch px-4 py-1 text-xl w-24 text-center" id="time-5">20:00</div>
+              <button onclick="toggleTimer(5, 1200)" id="btn-5" class="btn-brass px-4 py-1 rounded shadow">시작</button>
+              <button onclick="resetTimer(5, 1200)" class="btn-brass px-3 py-1 rounded shadow">↺</button>
+            </div>
+          </div>
+
+          <!-- Step 6 -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-700 pb-4 pt-2 gap-4">
+            <div><span class="text-[#dcb98a] font-bold mr-2 text-lg">6.</span> <span class="text-gray-200">1차 전체 토론</span> <span class="text-sm text-gray-400 block md:inline md:ml-2">20분 / 카드 획득, 전체 토론만</span></div>
+            <div class="flex items-center gap-3">
+              <div class="pocket-watch px-4 py-1 text-xl w-24 text-center" id="time-6">20:00</div>
+              <button onclick="toggleTimer(6, 1200)" id="btn-6" class="btn-brass px-4 py-1 rounded shadow">시작</button>
+              <button onclick="resetTimer(6, 1200)" class="btn-brass px-3 py-1 rounded shadow">↺</button>
+            </div>
+          </div>
+
+          <!-- Step 7 -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-700 pb-4 pt-2 gap-4">
+            <div><span class="text-[#dcb98a] font-bold mr-2 text-lg">7.</span> <span class="text-gray-200">2차 밀담</span> <span class="text-sm text-red-400 font-bold block md:inline md:ml-2">30분 / 카드 획득 및 밀담만 (최대 3인)</span></div>
+            <div class="flex items-center gap-3">
+              <div class="pocket-watch px-4 py-1 text-xl w-24 text-center" id="time-7">30:00</div>
+              <button onclick="toggleTimer(7, 1800)" id="btn-7" class="btn-brass px-4 py-1 rounded shadow">시작</button>
+              <button onclick="resetTimer(7, 1800)" class="btn-brass px-3 py-1 rounded shadow">↺</button>
+            </div>
+          </div>
+
+          <!-- Step 8 -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-700 pb-4 pt-2 gap-4">
+            <div><span class="text-[#dcb98a] font-bold mr-2 text-lg">8.</span> <span class="text-gray-200">2차 전체 토론</span> <span class="text-sm text-gray-400 block md:inline md:ml-2">30분 / 카드 획득, 전체 토론만</span></div>
+            <div class="flex items-center gap-3">
+              <div class="pocket-watch px-4 py-1 text-xl w-24 text-center" id="time-8">30:00</div>
+              <button onclick="toggleTimer(8, 1800)" id="btn-8" class="btn-brass px-4 py-1 rounded shadow">시작</button>
+              <button onclick="resetTimer(8, 1800)" class="btn-brass px-3 py-1 rounded shadow">↺</button>
+            </div>
+          </div>
+
+          <!-- Step 9 -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-700 pb-4 pt-2 gap-4">
+            <div><span class="text-[#dcb98a] font-bold mr-2 text-lg">9.</span> <span class="text-gray-200">추리 단계</span> <span class="text-sm text-gray-400 block md:inline md:ml-2">(총 18분)</span></div>
+            <div class="flex items-center gap-3">
+              <div class="pocket-watch px-4 py-1 text-xl w-24 text-center" id="time-9">18:00</div>
+              <button onclick="toggleTimer(9, 1080)" id="btn-9" class="btn-brass px-4 py-1 rounded shadow">시작</button>
+              <button onclick="resetTimer(9, 1080)" class="btn-brass px-3 py-1 rounded shadow">↺</button>
+            </div>
+          </div>
+
+          <!-- Step 10 -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-700 pb-4 pt-2 gap-4">
+            <div><span class="text-[#dcb98a] font-bold mr-2 text-lg">10.</span> <span class="text-gray-200">투표 단계</span> <span class="text-sm text-gray-400 block md:inline md:ml-2">(5분)</span></div>
+            <div class="flex items-center gap-3">
+              <div class="pocket-watch px-4 py-1 text-xl w-24 text-center" id="time-10">05:00</div>
+              <button onclick="toggleTimer(10, 300)" id="btn-10" class="btn-brass px-4 py-1 rounded shadow">시작</button>
+              <button onclick="resetTimer(10, 300)" class="btn-brass px-3 py-1 rounded shadow">↺</button>
+            </div>
+          </div>
+
+          <!-- Step 11 -->
+          <div class="flex items-center justify-between pt-2">
+            <div>
+              <span class="text-[#dcb98a] font-bold mr-2 text-lg">11.</span> <span class="text-gray-200">엔딩</span>
+            </div>
+            <span class="text-[#8b5a2b] italic text-sm">게임 종료</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. 게임 규칙 -->
+    <section class="bg-parchment rounded p-1 mb-12">
+      <div class="border-double-gold p-6 md:p-10 m-1">
+        <h2 class="text-3xl font-bold text-[#4a0000] mb-6 border-b border-[#8b5a2b] pb-4">
+          <span class="text-2xl mr-2">⚖️</span> 게임 규칙
+        </h2>
+        <div class="text-lg text-[#1a1a1a] space-y-5 font-medium px-2">
+          <ul class="space-y-4">
+            <li class="flex items-start">
+              <span class="text-[#8b0000] font-bold mr-3 mt-1">▶</span>
+              <div><strong>조사 기회:</strong> 1차 4번, 2차 3번 <span class="underline decoration-[#8b0000] decoration-2 underline-offset-4 font-bold">총 7번</span>의 조사 기회를 획득한다. 조사 기회는 양도할 수 없으며, 각 단계에서 모두 사용해야 한다.</div>
+            </li>
+            <li class="flex items-start">
+              <span class="text-[#8b0000] font-bold mr-3 mt-1">▶</span>
+              <div>조사 기회를 1번 사용하면 1장의 카드를 확인할 수 있다. 자신의 단서는 볼 수 없고 같은 장소를 중복하여 조사할 수 있다.</div>
+            </li>
+            <li class="flex items-start">
+              <span class="text-[#8b0000] font-bold mr-3 mt-1">▶</span>
+              <div><strong>카드의 확인:</strong> 확인한 카드는 플레이어가 소지하거나 일부 카드는 확인 후, <span class="text-red-700 font-bold">내용이 보이지 않게 되돌려 놓는다.</span></div>
+            </li>
+            <li class="flex items-start">
+              <span class="text-[#8b0000] font-bold mr-3 mt-1">▶</span>
+              <div><strong>소지 카드:</strong> 소지한 카드는 상황에 따라 다른 사람에게 보여주거나 교환하거나 전체 공개할 수 있다.<br/>전체 공개 시 모든 플레이어가 확인한 것으로 간주한다.</div>
+            </li>
+          </ul>
+          <hr class="border-gray-400 my-6">
+          <p class="font-bold text-gold-dark text-xl mb-3">▶ 중요한 단서 1, 2, 3, 4</p>
+          <ul class="space-y-2 mb-6 ml-6">
+            <li class="list-disc">이 카드는 조건을 만족시켜야만 확인할 수 있다. 일부 카드는 조사 기회가 사용되며, 그렇지 않은 카드도 있다.</li>
+            <li class="list-disc">(중요한 단서 1, 2, 3, 4는 모두 확인 후 되돌려 놓는다.)</li>
+          </ul>
+          <p class="font-bold text-gold-dark text-xl mb-3">▶ 중요한 단서 X</p>
+          <ul class="space-y-2 mb-6 ml-6">
+            <li class="list-disc">이 카드는 조건을 만족시켜야만 확인할 수 있다.</li>
+          </ul>
+          <div class="bg-red-900/5 p-4 border border-red-900/30 rounded mt-4">
+            <p class="font-bold text-[#8b0000] text-xl mb-2">▶ EX 카드</p>
+            <ul class="ml-2">
+              <li>이 카드는 조건을 만족시켜야만 확인할 수 있다. EX 카드의 확인에는 <span class="font-bold underline text-red-800">조사 기회가 사용되지 않으며, 이 카드는 전체 공개, 양도, 교환, 일부 공개가 불가능하다.</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // --- 삐 소리(알람음) 생성 함수 ---
+    function playBeep() {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      
+      let startTime = ctx.currentTime;
+      for (let i = 0; i < 4; i++) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(800, startTime);
+        
+        gain.gain.setValueAtTime(0.5, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.1);
+        
+        osc.start(startTime);
+        osc.stop(startTime + 0.1);
+        startTime += 0.2; 
+      }
+    }
+
+    // --- 타이머 기능 ---
+    const timers = {};
+    function updateTimerDisplay(id, timeLeft) {
+      const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+      const s = (timeLeft % 60).toString().padStart(2, '0');
+      document.getElementById('time-' + id).innerText = `${m}:${s}`;
+    }
+
+    function toggleTimer(id, totalSeconds) {
+      const btn = document.getElementById('btn-' + id);
+      if (timers[id] && timers[id].interval) {
+        clearInterval(timers[id].interval);
+        timers[id].interval = null;
+        btn.innerText = "계속";
+        btn.classList.remove("active-timer");
+      } else {
+        if (!timers[id]) timers[id] = { left: totalSeconds };
+        btn.innerText = "정지";
+        btn.classList.add("active-timer");
+        timers[id].interval = setInterval(() => {
+          if (timers[id].left > 0) {
+            timers[id].left--;
+            updateTimerDisplay(id, timers[id].left);
+          } else {
+            clearInterval(timers[id].interval);
+            timers[id].interval = null;
+            btn.innerText = "종료";
+            btn.classList.remove("active-timer");
+            btn.disabled = true;
+            playBeep(); 
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer(id, totalSeconds) {
+      if (timers[id] && timers[id].interval) {
+        clearInterval(timers[id].interval);
+      }
+      timers[id] = { left: totalSeconds, interval: null };
+      updateTimerDisplay(id, totalSeconds);
+      const btn = document.getElementById('btn-' + id);
+      btn.innerText = "시작";
+      btn.classList.remove("active-timer");
+      btn.disabled = false;
+    }
+
+    // --- TTS ---
+    const ttsBtn = document.getElementById('tts-btn');
+    const storyTextDiv = document.getElementById('story-text');
+    let isPlaying = false;
+    let voices = [];
+
+    function populateVoices() {
+      voices = speechSynthesis.getVoices();
+    }
+    speechSynthesis.onvoiceschanged = populateVoices;
+
+    function speakStory() {
+      if (isPlaying) {
+        speechSynthesis.cancel();
+        isPlaying = false;
+        ttsBtn.innerHTML = "<span>🔊</span> [낭독]";
+        return;
+      }
+
+      if (voices.length === 0) populateVoices();
+
+      let koVoices = voices.filter(v => v.lang.includes('ko') || v.lang.includes('KR'));
+      let selectedVoice = koVoices.find(v => 
+        v.name.toLowerCase().includes('male') || 
+        v.name.includes('진우') || 
+        v.name.includes('InJoon') || 
+        v.name.includes('Standard-C') ||
+        v.name.includes('Standard-D')
+      );
+      if (!selectedVoice && koVoices.length > 0) {
+        selectedVoice = koVoices[0];
+      }
+
+      const paragraphs = Array.from(storyTextDiv.querySelectorAll('p')).map(p => p.innerText);
+      
+      paragraphs.forEach((text, index) => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        if (selectedVoice) utterance.voice = selectedVoice;
+        utterance.rate = 0.95; 
+        utterance.pitch = 0.9; 
+        
+        if (index === paragraphs.length - 1) {
+          utterance.onend = () => {
+            isPlaying = false;
+            ttsBtn.innerHTML = "<span>🔊</span> [낭독]";
+          };
+        }
+        speechSynthesis.speak(utterance);
+      });
+
+      isPlaying = true;
+      ttsBtn.innerHTML = "<span>⏹️</span> [중지]";
+    }
+
+    ttsBtn.addEventListener('click', speakStory);
+  </script>
 </body>
 </html>
